@@ -4,6 +4,7 @@ public class Bullet : MonoBehaviour
 {
     public float speed = 10f;
     public float lifeTime = 2f;
+
     private Rigidbody2D rb;
 
     void Awake()
@@ -17,11 +18,16 @@ public class Bullet : MonoBehaviour
         Destroy(gameObject, lifeTime);
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy"))
         {
-            Destroy(collision.gameObject);
+            EnemySimple enemy = other.GetComponent<EnemySimple>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(1);
+            }
+
             Destroy(gameObject);
         }
     }

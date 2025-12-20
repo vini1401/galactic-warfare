@@ -521,7 +521,7 @@ GameObject:
   - component: {fileID: 571778164}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -646,7 +646,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.0564723, y: -0.014118254}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -657,7 +657,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 4.501274, y: 3.400066}
   m_EdgeRadius: 0
 --- !u!212 &571778163
 SpriteRenderer:
@@ -727,7 +727,7 @@ MonoBehaviour:
   health: 0
   lives: 3
   ammo: 50
-  currentWeapon: Normal
+  currentWeapon: 0
   score: 0
 --- !u!1 &619394800
 GameObject:

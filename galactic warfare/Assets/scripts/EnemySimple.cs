@@ -2,20 +2,24 @@ using UnityEngine;
 
 public class EnemySimple : MonoBehaviour
 {
-    public int life = 1;
-    public int scoreValue = 100;
+    public EnemyData data;
+
+    private int currentLife;
+
+    void Start()
+    {
+        currentLife = data.life;
+    }
 
     public void TakeDamage(int damage)
     {
-        life -= damage;
+        currentLife -= damage;
 
-        if (life <= 0)
+        if (currentLife <= 0)
         {
             PlayerStats player = FindObjectOfType<PlayerStats>();
             if (player != null)
-            {
-                player.AddScore(scoreValue);
-            }
+                player.AddScore(data.scoreValue);
 
             Destroy(gameObject);
         }

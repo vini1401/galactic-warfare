@@ -31,6 +31,26 @@ public class PlayerStats : MonoBehaviour
 
     void Start()
     {
+        // NÃO carrega automaticamente
+        NewGame();
+    }
+
+    // ================= CONTROLE DE JOGO =================
+
+    public void NewGame()
+    {
+        health = maxHealth;
+        lives = 3;
+        ammo = 50;
+        currentWeapon = "Normal";
+        score = 0;
+
+        UpdateHUD();
+        Debug.Log("Novo jogo iniciado");
+    }
+
+    public void ContinueGame()
+    {
         LoadGame();
         UpdateHUD();
     }
@@ -63,6 +83,13 @@ public class PlayerStats : MonoBehaviour
     {
         lives--;
         GameEvents.OnLivesChanged?.Invoke(lives);
+
+        if (lives <= 0)
+        {
+            Debug.Log("Game Over");
+            Destroy(gameObject);
+            return;
+        }
 
         health = maxHealth;
         GameEvents.OnHealthChanged?.Invoke(health);
@@ -108,42 +135,44 @@ public class PlayerStats : MonoBehaviour
 
     public void LoadGame()
     {
-        if (File.Exists(savePath))
+        if (!File.Exists(savePath))
         {
-            string json = File.ReadAllText(savePath);
-            PlayerData data = JsonUtility.FromJson<PlayerData>(json);
-
-            health = data.health;
-            lives = data.lives;
-            ammo = data.ammo;
-            currentWeapon = data.currentWeapon;
-            score = data.score;
-
-            Debug.Log("Jogo carregado!");
+            Debug.Log("Nenhum save encontrado");
+            return;
         }
-        else
-        {
-            // Se não existir save, inicia padrão
-            health = maxHealth;
-            Debug.Log("Nenhum save encontrado. Novo jogo iniciado.");
-        }
+
+        string json = File.ReadAllText(savePath);
+        PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+
+        health = data.health;
+        lives = data.lives;
+        ammo = data.ammo;
+        currentWeapon = data.currentWeapon;
+        score = data.score;
+
+        Debug.Log("Save carregado");
     }
 
-    // ================= TESTE RÁPIDO =================
+    // ================= TESTE TEMPORÁRIO =================
 
     void Update()
     {
-        // Aperte F5 para salvar
+        // F5 → Salvar
         if (Input.GetKeyDown(KeyCode.F5))
         {
             SaveGame();
         }
 
-        // Aperte F9 para carregar
+        // F9 → Continuar
         if (Input.GetKeyDown(KeyCode.F9))
         {
-            LoadGame();
-            UpdateHUD();
+            ContinueGame();
+        }
+
+        // F1 → Novo Jogo
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            NewGame();
         }
     }
 }

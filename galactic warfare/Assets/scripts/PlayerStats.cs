@@ -1,4 +1,15 @@
 using UnityEngine;
+using System.IO;
+
+[System.Serializable]
+public class PlayerData
+{
+    public int health;
+    public int lives;
+    public int ammo;
+    public string currentWeapon;
+    public int score;
+}
 
 public class PlayerStats : MonoBehaviour
 {
@@ -11,11 +22,23 @@ public class PlayerStats : MonoBehaviour
 
     public int score = 0;
 
+    private string savePath;
+
+    void Awake()
+    {
+        savePath = Application.persistentDataPath + "/savegame.json";
+    }
+
     void Start()
     {
-        health = maxHealth;
+        LoadGame();
+        UpdateHUD();
+    }
 
-        // Dispara eventos iniciais
+    // ================= HUD =================
+
+    void UpdateHUD()
+    {
         GameEvents.OnHealthChanged?.Invoke(health);
         GameEvents.OnLivesChanged?.Invoke(lives);
         GameEvents.OnAmmoChanged?.Invoke(ammo);
@@ -23,7 +46,7 @@ public class PlayerStats : MonoBehaviour
         GameEvents.OnScoreChanged?.Invoke(score);
     }
 
-    // ====== MÉTODOS ======
+    // ================= GAMEPLAY =================
 
     public void TakeDamage(int damage)
     {
@@ -48,6 +71,7 @@ public class PlayerStats : MonoBehaviour
     public void UseAmmo(int amount)
     {
         ammo -= amount;
+        if (ammo < 0) ammo = 0;
         GameEvents.OnAmmoChanged?.Invoke(ammo);
     }
 
@@ -61,5 +85,65 @@ public class PlayerStats : MonoBehaviour
     {
         score += value;
         GameEvents.OnScoreChanged?.Invoke(score);
+    }
+
+    // ================= SAVE / LOAD =================
+
+    public void SaveGame()
+    {
+        PlayerData data = new PlayerData
+        {
+            health = this.health,
+            lives = this.lives,
+            ammo = this.ammo,
+            currentWeapon = this.currentWeapon,
+            score = this.score
+        };
+
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(savePath, json);
+
+        Debug.Log("Jogo salvo em: " + savePath);
+    }
+
+    public void LoadGame()
+    {
+        if (File.Exists(savePath))
+        {
+            string json = File.ReadAllText(savePath);
+            PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+
+            health = data.health;
+            lives = data.lives;
+            ammo = data.ammo;
+            currentWeapon = data.currentWeapon;
+            score = data.score;
+
+            Debug.Log("Jogo carregado!");
+        }
+        else
+        {
+            // Se não existir save, inicia padrão
+            health = maxHealth;
+            Debug.Log("Nenhum save encontrado. Novo jogo iniciado.");
+        }
+    }
+
+    // ================= TESTE RÁPIDO =================
+
+    void Update()
+    {
+        // Aperte F5 para salvar
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            SaveGame();
+        }
+
+        // Aperte F9 para carregar
+        if (Input.GetKeyDown(KeyCode.F9))
+        {
+            LoadGame();
+            UpdateHUD();
+        }
     }
 }

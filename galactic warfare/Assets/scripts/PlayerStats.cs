@@ -7,7 +7,7 @@ public class PlayerData
     public int health;
     public int lives;
     public int ammo;
-    public string currentWeapon;
+    public WeaponType currentWeapon;
     public int score;
 }
 
@@ -18,7 +18,7 @@ public class PlayerStats : MonoBehaviour
 
     public int lives = 3;
     public int ammo = 50;
-    public string currentWeapon = "Normal";
+    public WeaponType currentWeapon = WeaponType.Normal;
 
     public int score = 0;
 
@@ -42,7 +42,7 @@ public class PlayerStats : MonoBehaviour
         health = maxHealth;
         lives = 3;
         ammo = 50;
-        currentWeapon = "Normal";
+        currentWeapon = WeaponType.Normal;
         score = 0;
 
         UpdateHUD();
@@ -62,7 +62,7 @@ public class PlayerStats : MonoBehaviour
         GameEvents.OnHealthChanged?.Invoke(health);
         GameEvents.OnLivesChanged?.Invoke(lives);
         GameEvents.OnAmmoChanged?.Invoke(ammo);
-        GameEvents.OnWeaponChanged?.Invoke(currentWeapon);
+        GameEvents.OnWeaponChanged?.Invoke(currentWeapon.ToString());
         GameEvents.OnScoreChanged?.Invoke(score);
     }
 
@@ -102,10 +102,10 @@ public class PlayerStats : MonoBehaviour
         GameEvents.OnAmmoChanged?.Invoke(ammo);
     }
 
-    public void ChangeWeapon(string weaponName)
+    public void ChangeWeapon(WeaponType newWeapon)
     {
-        currentWeapon = weaponName;
-        GameEvents.OnWeaponChanged?.Invoke(currentWeapon);
+        currentWeapon = newWeapon;
+        GameEvents.OnWeaponChanged?.Invoke(currentWeapon.ToString());
     }
 
     public void AddScore(int value)
@@ -120,11 +120,11 @@ public class PlayerStats : MonoBehaviour
     {
         PlayerData data = new PlayerData
         {
-            health = this.health,
-            lives = this.lives,
-            ammo = this.ammo,
-            currentWeapon = this.currentWeapon,
-            score = this.score
+            health = health,
+            lives = lives,
+            ammo = ammo,
+            currentWeapon = currentWeapon,
+            score = score
         };
 
         string json = JsonUtility.ToJson(data, true);
@@ -159,20 +159,14 @@ public class PlayerStats : MonoBehaviour
     {
         // F5 → Salvar
         if (Input.GetKeyDown(KeyCode.F5))
-        {
             SaveGame();
-        }
 
         // F9 → Continuar
         if (Input.GetKeyDown(KeyCode.F9))
-        {
             ContinueGame();
-        }
 
         // F1 → Novo Jogo
         if (Input.GetKeyDown(KeyCode.F1))
-        {
             NewGame();
-        }
     }
 }

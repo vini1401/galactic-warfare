@@ -7,15 +7,53 @@ public class PlayerShoot : MonoBehaviour
     public float fireRate = 0.2f;
 
     private float nextFireTime;
+    private PlayerStats playerStats;
 
     public WeaponType currentWeapon = WeaponType.Normal;
 
+    void Start()
+    {
+        playerStats = GetComponent<PlayerStats>();
+        SetWeapon(currentWeapon);
+    }
+
     void Update()
+    {
+        HandleWeaponSwitch();
+        HandleShoot();
+    }
+
+    void HandleWeaponSwitch()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            SetWeapon(WeaponType.Normal);
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            SetWeapon(WeaponType.Double);
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            SetWeapon(WeaponType.Spread);
+    }
+
+    // 🔴 AGORA É PUBLIC
+    public void SetWeapon(WeaponType weapon)
+    {
+        currentWeapon = weapon;
+
+        if (playerStats != null)
+            playerStats.ChangeWeapon(weapon);
+    }
+
+    void HandleShoot()
     {
         if (Input.GetKey(KeyCode.Space) && Time.time >= nextFireTime)
         {
-            Shoot();
-            nextFireTime = Time.time + fireRate;
+            if (playerStats.ammo > 0)
+            {
+                Shoot();
+                playerStats.UseAmmo(1);
+                nextFireTime = Time.time + fireRate;
+            }
         }
     }
 
@@ -24,53 +62,19 @@ public class PlayerShoot : MonoBehaviour
         switch (currentWeapon)
         {
             case WeaponType.Normal:
-                ShootNormal();
+                Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
                 break;
 
             case WeaponType.Double:
-                ShootDouble();
+                Instantiate(bulletPrefab, firePoint.position + Vector3.up * 0.2f, Quaternion.identity);
+                Instantiate(bulletPrefab, firePoint.position + Vector3.down * 0.2f, Quaternion.identity);
                 break;
 
             case WeaponType.Spread:
-                ShootSpread();
+                Instantiate(bulletPrefab, firePoint.position, Quaternion.Euler(0, 0, -15));
+                Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+                Instantiate(bulletPrefab, firePoint.position, Quaternion.Euler(0, 0, 15));
                 break;
-        }
-    }
-
-    void ShootNormal()
-    {
-        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-    }
-
-    void ShootDouble()
-    {
-        Instantiate(bulletPrefab, firePoint.position + Vector3.up * 0.2f, firePoint.rotation);
-        Instantiate(bulletPrefab, firePoint.position + Vector3.down * 0.2f, firePoint.rotation);
-    }
-
-    void ShootSpread()
-    {
-        for (int i = -1; i <= 1; i++)
-        {
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                rb.velocity = Quaternion.Euler(0, 0, i * 15) * Vector2.right * 10f;
-            }
-        }
-    }
-
-    // 🔥 ESTE MÉTODO RESOLVE O ERRO
-    public void SetWeapon(WeaponType weapon)
-    {
-        currentWeapon = weapon;
-
-        // Atualiza HUD
-        PlayerStats stats = GetComponent<PlayerStats>();
-        if (stats != null)
-        {
-            stats.ChangeWeapon(weapon.ToString());
         }
     }
 }

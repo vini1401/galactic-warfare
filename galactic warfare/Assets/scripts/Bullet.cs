@@ -5,6 +5,8 @@ public class Bullet : MonoBehaviour
     public float speed = 10f;
     public float lifeTime = 2f;
 
+    public GameObject impactParticle; // PREFAB
+
     private Rigidbody2D rb;
 
     void Awake()
@@ -14,7 +16,7 @@ public class Bullet : MonoBehaviour
 
     void Start()
     {
-        rb.velocity = Vector2.right * speed;
+        rb.velocity = transform.right * speed;
         Destroy(gameObject, lifeTime);
     }
 
@@ -28,7 +30,22 @@ public class Bullet : MonoBehaviour
                 enemy.TakeDamage(1);
             }
 
+            SpawnImpact();
             Destroy(gameObject);
+        }
+    }
+
+    void SpawnImpact()
+    {
+        if (impactParticle != null)
+        {
+            GameObject impact = Instantiate(
+                impactParticle,
+                transform.position,
+                Quaternion.identity
+            );
+
+            Destroy(impact, 0.5f);
         }
     }
 }

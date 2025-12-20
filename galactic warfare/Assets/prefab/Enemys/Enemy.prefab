@@ -187,6 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 650b6146894fe1f40b9b80b2e3996dd9, type: 2}
+  explosionParticlePrefab: {fileID: 2495570121685808052, guid: 2d46df38731b82944b1fde931ed1ed42, type: 3}
 --- !u!114 &6726055292857866156
 MonoBehaviour:
   m_ObjectHideFlags: 0

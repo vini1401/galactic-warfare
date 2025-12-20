@@ -3,6 +3,7 @@ using UnityEngine;
 public class EnemySimple : MonoBehaviour
 {
     public EnemyData data;
+    public GameObject explosionParticlePrefab;
 
     private int currentLife;
 
@@ -21,7 +22,22 @@ public class EnemySimple : MonoBehaviour
             if (player != null)
                 player.AddScore(data.scoreValue);
 
+            SpawnExplosion();
             Destroy(gameObject);
+        }
+    }
+
+    void SpawnExplosion()
+    {
+        if (explosionParticlePrefab != null)
+        {
+            GameObject explosion = Instantiate(
+                explosionParticlePrefab,
+                transform.position,
+                Quaternion.identity
+            );
+
+            Destroy(explosion, 1f);
         }
     }
 }

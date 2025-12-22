@@ -22,6 +22,9 @@ public class PlayerStats : MonoBehaviour
 
     public int score = 0;
 
+    [Header("VFX")]
+    public GameObject deathParticlePrefab;
+
     private string savePath;
 
     void Awake()
@@ -45,6 +48,7 @@ public class PlayerStats : MonoBehaviour
         score = 0;
 
         UpdateHUD();
+        Debug.Log("Novo jogo iniciado");
     }
 
     public void ContinueGame()
@@ -73,16 +77,22 @@ public class PlayerStats : MonoBehaviour
 
         if (health <= 0)
         {
-            HandleDeath();
+            Die();
         }
     }
 
-    void HandleDeath()
+    void Die()
     {
         lives--;
         GameEvents.OnLivesChanged?.Invoke(lives);
 
-        // Desativa o player via Pool
+        // 🔥 PARTÍCULA DE MORTE
+        if (deathParticlePrefab != null)
+        {
+            Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
+        }
+
+        // Remove o player da cena (pool)
         PlayerPool.Instance.DespawnPlayer();
 
         if (lives <= 0)
@@ -92,16 +102,10 @@ public class PlayerStats : MonoBehaviour
         }
 
         // Respawn
-        Invoke(nameof(Respawn), 1.5f);
-    }
-
-    void Respawn()
-    {
         health = maxHealth;
-        ammo = 50;
+        GameEvents.OnHealthChanged?.Invoke(health);
 
-        PlayerPool.Instance.SpawnPlayer();
-        UpdateHUD();
+        PlayerPool.Instance.Invoke(nameof(PlayerPool.SpawnPlayer), 1f);
     }
 
     public void UseAmmo(int amount)

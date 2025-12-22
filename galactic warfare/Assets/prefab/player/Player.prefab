@@ -226,6 +226,7 @@ MonoBehaviour:
   ammo: 50
   currentWeapon: 0
   score: 0
+  deathParticlePrefab: {fileID: 1016020833595854014, guid: 8b324d2857a0a004194abd154d47a6ab, type: 3}
 --- !u!1 &7724588537401170264
 GameObject:
   m_ObjectHideFlags: 0

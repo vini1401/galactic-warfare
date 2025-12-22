@@ -31,7 +31,6 @@ public class PlayerStats : MonoBehaviour
 
     void Start()
     {
-        // NÃO carrega automaticamente
         NewGame();
     }
 
@@ -46,7 +45,6 @@ public class PlayerStats : MonoBehaviour
         score = 0;
 
         UpdateHUD();
-        Debug.Log("Novo jogo iniciado");
     }
 
     public void ContinueGame()
@@ -75,24 +73,35 @@ public class PlayerStats : MonoBehaviour
 
         if (health <= 0)
         {
-            LoseLife();
+            HandleDeath();
         }
     }
 
-    void LoseLife()
+    void HandleDeath()
     {
         lives--;
         GameEvents.OnLivesChanged?.Invoke(lives);
 
+        // Desativa o player via Pool
+        PlayerPool.Instance.DespawnPlayer();
+
         if (lives <= 0)
         {
             Debug.Log("Game Over");
-            Destroy(gameObject);
             return;
         }
 
+        // Respawn
+        Invoke(nameof(Respawn), 1.5f);
+    }
+
+    void Respawn()
+    {
         health = maxHealth;
-        GameEvents.OnHealthChanged?.Invoke(health);
+        ammo = 50;
+
+        PlayerPool.Instance.SpawnPlayer();
+        UpdateHUD();
     }
 
     public void UseAmmo(int amount)
@@ -129,17 +138,12 @@ public class PlayerStats : MonoBehaviour
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(savePath, json);
-
-        Debug.Log("Jogo salvo em: " + savePath);
     }
 
     public void LoadGame()
     {
         if (!File.Exists(savePath))
-        {
-            Debug.Log("Nenhum save encontrado");
             return;
-        }
 
         string json = File.ReadAllText(savePath);
         PlayerData data = JsonUtility.FromJson<PlayerData>(json);
@@ -149,24 +153,5 @@ public class PlayerStats : MonoBehaviour
         ammo = data.ammo;
         currentWeapon = data.currentWeapon;
         score = data.score;
-
-        Debug.Log("Save carregado");
-    }
-
-    // ================= TESTE TEMPORÁRIO =================
-
-    void Update()
-    {
-        // F5 → Salvar
-        if (Input.GetKeyDown(KeyCode.F5))
-            SaveGame();
-
-        // F9 → Continuar
-        if (Input.GetKeyDown(KeyCode.F9))
-            ContinueGame();
-
-        // F1 → Novo Jogo
-        if (Input.GetKeyDown(KeyCode.F1))
-            NewGame();
     }
 }

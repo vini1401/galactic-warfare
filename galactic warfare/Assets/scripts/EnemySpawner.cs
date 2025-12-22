@@ -3,27 +3,12 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
-
-    public float spawnInterval = 1.5f;   // tempo entre spawns
-    public float spawnDuration = 7f;     // tempo total spawnando
+    public float spawnInterval = 1.5f; // tempo entre spawns
 
     private float spawnTimer;
-    private float durationTimer;
-    private bool canSpawn = true;
 
     void Update()
     {
-        if (!canSpawn)
-            return;
-
-        durationTimer += Time.deltaTime;
-
-        if (durationTimer >= spawnDuration)
-        {
-            canSpawn = false;
-            return;
-        }
-
         spawnTimer += Time.deltaTime;
 
         if (spawnTimer >= spawnInterval)
